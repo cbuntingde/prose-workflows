@@ -71,3 +71,7 @@ MIT
 ## Support
 
 If you find these useful, consider [sponsoring](https://github.com/sponsors/gsxrchris) the project.
+
+---
+
+Copyright © 2026 Created by Chris Bunting
