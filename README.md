@@ -1,5 +1,7 @@
 > **Note**: These workflows haven't been fully tested yet, so they may not install or run perfectly out of the box. If you run into any issues, feel free to open a new issue!
 
+> **Docs**: [OpenClaw Prose Documentation](https://docs.openclaw.ai/prose)
+
 # Prose Workflows
 
 A collection of multi-agent AI workflows using [OpenProse](https://prose.md), a portable markdown-first programming language for orchestrating AI sessions.
