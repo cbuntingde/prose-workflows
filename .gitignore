@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Runtime state
+.prose/
+.prose/runs/
+.prose/agents/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# Output files
+*.md
+!README.md

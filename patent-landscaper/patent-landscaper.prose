@@ -1,0 +1,41 @@
+# Patent Landscaper Prose
+# Analyzes patent landscapes, trends, and IP positioning
+
+input topic: "Technology or industry to analyze"
+input focus: "analysis" # analysis, search, validation, or competitive
+
+agent patent_searcher:
+  model: sonnet
+  prompt: "You search for patents in the given technology area. Identify: key patents, major assignees, patent families, filing trends, geographic coverage, and technological approaches. Use patent databases and search strategies."
+
+agent trend_analyzer:
+  model: sonnet
+  prompt: "You analyze patent trends. Examine: filing velocity, growth areas, declining areas, emerging technologies, geographic distribution, and temporal patterns. Identify trends over 5/10 year periods."
+
+agent competitor_analyzer:
+  model: sonnet
+  prompt: "You analyze patent portfolios of key players. Identify: leading assignees, their patent strength, IP strategy, white spaces, competitive positioning, and potential freedom to operate issues."
+
+agent gap_identifier:
+  model: sonnet
+  prompt: "You identify white spaces and opportunities. Find: underserved technology areas, gaps in coverage, potential for new patents, and areas with high innovation but low patent protection."
+
+agent landscape_reporter:
+  model: opus
+  prompt: "You synthesize patent landscape analysis into a comprehensive report. Include: executive summary, key findings, trend analysis, competitive landscape, white space opportunities, and strategic recommendations."
+
+parallel:
+  patents = session: patent_searcher
+    prompt: "Search for patents related to: {topic}."
+  trends = session: trend_analyzer
+    prompt: "Analyze patent trends for: {topic}."
+  competitors = session: competitor_analyzer
+    prompt: "Analyze competitive patent portfolios for: {topic}."
+  gaps = session: gap_identifier
+    prompt: "Identify white spaces and opportunities in: {topic}."
+
+report = session: landscape_reporter
+  prompt: "Generate patent landscape report for: {topic}"
+  context: { patents, trends, competitors, gaps }
+
+save report to "patent-landscape.md"

@@ -1,0 +1,41 @@
+# Financial Modeler Prose
+# Builds financial models, projections, and analysis
+
+input target: "Path to financial data (CSV, Excel, or description)"
+input model_type: "projections" # projections, valuation, budgeting, DCF, or analysis
+
+agent data_parser:
+  model: sonnet
+  prompt: "You parse and structure financial data. Extract: revenue, costs, assets, liabilities, cash flows, and key metrics. Identify patterns, anomalies, and data quality issues. Structure data for modeling."
+
+agent forecaster:
+  model: sonnet
+  prompt: "You build financial projections. Create: revenue forecasts, expense projections, cash flow estimates, and growth scenarios (base, optimistic, conservative). Use appropriate methods: historical trends, CAGR, industry benchmarks, or specific assumptions."
+
+agent valuation_modeler:
+  model: sonnet
+  prompt: "You perform valuation analysis. Calculate: DCF, comparable company analysis, precedent transactions, and sensitivity analysis. Determine enterprise value, equity value, and per-share valuation. Show key assumptions and their impact."
+
+agent scenario_analyzer:
+  model: sonnet
+  prompt: "You analyze financial scenarios and sensitivities. Model: best case, worst case, base case scenarios. Perform sensitivity analysis on key variables (growth rate, margins, discount rate). Identify key value drivers and risk factors."
+
+agent report_generator:
+  model: opus
+  prompt: "You synthesize financial analysis into a clear report. Include: executive summary, key metrics, projections, valuation, scenario analysis, risks, and recommendations. Use tables and clear formatting. Explain methodology in plain language."
+
+parallel:
+  parsed = session: data_parser
+    prompt: "Parse and structure financial data from {target}."
+  forecast = session: forecaster
+    prompt: "Build financial projections for {target}."
+  valuation = session: valuation_modeler
+    prompt: "Perform valuation analysis for {target}."
+  scenarios = session: scenario_analyzer
+    prompt: "Analyze scenarios and sensitivities for {target}."
+
+report = session: report_generator
+  prompt: "Generate comprehensive financial report for {target}"
+  context: { parsed, forecast, valuation, scenarios }
+
+save report to "financial-model.md"

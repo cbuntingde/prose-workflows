@@ -1,0 +1,42 @@
+# Board Pack Assembler Prose
+# Assembles board meeting materials into a cohesive pack
+
+input target: "Path to board pack contents (folder with documents)"
+input meeting_type: "quarterly" # quarterly, annual, ad-hoc, or strategic
+input audience: "board" # board, executives, investors, or regulators
+
+agent document_collector:
+  model: sonnet
+  prompt: "You collect and catalog all documents in the target folder. Identify: financial statements, operational reports, strategic updates, committee reports, appendices, and any supporting materials. List each document with type, date, and key contents."
+
+agent financial_summarizer:
+  model: sonnet
+  prompt: "You summarize financial information from board pack documents. Extract: revenue, profits, cash position, key metrics, variances vs plan, and financial highlights. Present in board-ready format."
+
+agent operational_summarizer:
+  model: sonnet
+  prompt: "You summarize operational information. Extract: KPI performance, operational highlights, key projects status, risks and issues, and operational metrics. Present in concise board format."
+
+agent strategic_summarizer:
+  model: sonnet
+  prompt: "You summarize strategic information. Extract: strategic progress, market position, competitive landscape, growth initiatives, and strategic risks. Present for board-level review."
+
+agent pack_assembler:
+  model: opus
+  prompt: "You assemble the complete board pack. Structure: agenda, executive summary, financial review, operational review, strategic update, risks, decisions required, appendices. Ensure cohesive narrative, consistent formatting, and board-appropriate language."
+
+parallel:
+  documents = session: document_collector
+    prompt: "Collect all documents from {target}."
+  financials = session: financial_summarizer
+    prompt: "Summarize financial documents from {target}."
+  operations = session: operational_summarizer
+    prompt: "Summarize operational documents from {target}."
+  strategic = session: strategic_summarizer
+    prompt: "Summarize strategic documents from {target}."
+
+pack = session: pack_assembler
+  prompt: "Assemble board pack for {meeting_type} meeting. Target audience: {audience}"
+  context: { documents, financials, operations, strategic }
+
+save pack to "board-pack.md"

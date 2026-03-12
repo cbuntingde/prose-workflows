@@ -1,0 +1,41 @@
+# Security Reviewer Prose
+# Reviews code for security vulnerabilities using multiple specialized agents
+
+input target: "Path to code to review (file or directory)"
+input scope: "full" # full, quick, or critical-only
+
+agent scanner:
+  model: sonnet
+  prompt: "You are a security vulnerability scanner. Scan the target code for common vulnerabilities including: SQL injection, XSS, command injection, path traversal, insecure deserialization, hardcoded secrets, weak cryptography, and OWASP Top 10 issues. List each finding with file, line number, severity (critical/high/medium/low), and description."
+
+agent dependency_auditor:
+  model: sonnet
+  prompt: "You analyze dependencies for security issues. Check package.json, requirements.txt, Cargo.toml, go.mod, or other dependency files. Look for: known vulnerabilities (CVE), outdated packages with known issues, malicious packages, and supply chain risks. Report CVEs with severity scores."
+
+agent secrets_detector:
+  model: sonnet
+  prompt: "You hunt for exposed secrets in code. Search for: API keys, tokens, passwords, private keys, AWS credentials, database connection strings, environment variables with secrets, and accidentally committed credentials. Report exact locations."
+
+agent architecture_reviewer:
+  model: opus
+  prompt: "You review security architecture. Evaluate: authentication/authorization patterns, input validation, secure coding practices, error handling, logging of sensitive data, encryption usage, and overall security posture. Provide actionable recommendations."
+
+agent report_synthesizer:
+  model: opus
+  prompt: "You synthesize security findings into a clear, actionable report. Combine findings from all reviewers. Prioritize by severity. Include: executive summary, critical findings (with fixes), high priority items, and recommendations. Format as markdown."
+
+parallel:
+  scan_results = session: scanner
+    prompt: "Scan {target} for vulnerabilities. Scope: {scope}."
+  dep_results = session: dependency_auditor
+    prompt: "Audit dependencies in {target} for security issues."
+  secret_results = session: secrets_detector
+    prompt: "Search {target} for exposed secrets and credentials."
+  arch_results = session: architecture_reviewer
+    prompt: "Review security architecture of {target}."
+
+final = session: report_synthesizer
+  prompt: "Synthesize all security findings into a comprehensive report. Target: {target}, Scope: {scope}"
+  context: { scan_results, dep_results, secret_results, arch_results }
+
+save final to "security-review.md"

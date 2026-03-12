@@ -1,0 +1,53 @@
+# Due Diligence Analyst Prose
+# Conducts comprehensive due diligence on companies, investments, or acquisitions
+
+input target: "Company or investment target to analyze"
+input type: "acquisition" # acquisition, investment, partnership, or vendor
+
+agent company_researcher:
+  model: sonnet
+  prompt: "You research the company thoroughly. Gather: company overview, history, ownership structure, management team, organizational structure, headquarters, founded date, key milestones, and public/private status."
+
+agent financial_analyzer:
+  model: sonnet
+  prompt: "You analyze financial health. Examine: revenue, profitability, cash flow, debt, assets, liabilities, financial statements (if public), funding history, valuation, burn rate, and financial ratios. Identify strengths and red flags."
+
+agent market_analyzer:
+  model: sonnet
+  prompt: "You analyze market position. Examine: market size, addressable market, market share, competitive landscape, customer segments, growth drivers, industry trends, and barriers to entry."
+
+agent legal_compliance:
+  model: sonnet
+  prompt: "You review legal and compliance status. Identify: litigation history, regulatory issues, IP ownership, contracts, licenses, permits, compliance programs, and any legal risks."
+
+agent risk_assessor:
+  model: sonnet
+  prompt: "You assess overall risk profile. Evaluate: operational risks, financial risks, market risks, technology risks, key person risk, concentration risks, and mitigation factors. Rate each risk area."
+
+agent opportunity_evaluator:
+  model: sonnet
+  prompt: "You evaluate opportunities. Identify: synergies, growth potential, strategic value, competitive advantages, expansion opportunities, and upside scenarios."
+
+agent dd_reporter:
+  model: opus
+  prompt: "You synthesize due diligence findings into a comprehensive report. Include: executive summary, company overview, financial analysis, market analysis, legal/compliance findings, risk assessment, opportunities, and recommendations/conclusion."
+
+parallel:
+  company = session: company_researcher
+    prompt: "Research company: {target}."
+  financials = session: financial_analyzer
+    prompt: "Analyze financials for: {target}."
+  market = session: market_analyzer
+    prompt: "Analyze market position for: {target}."
+  legal = session: legal_compliance
+    prompt: "Review legal/compliance for: {target}."
+  risks = session: risk_assessor
+    prompt: "Assess risks for: {target}."
+  opportunities = session: opportunity_evaluator
+    prompt: "Evaluate opportunities for: {target}."
+
+report = session: dd_reporter
+  prompt: "Generate due diligence report for: {target}"
+  context: { company, financials, market, legal, risks, opportunities }
+
+save report to "due-diligence.md"

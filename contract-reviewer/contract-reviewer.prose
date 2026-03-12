@@ -1,0 +1,46 @@
+# Contract Reviewer Prose
+# Reviews contracts for risks, problematic clauses, and legal issues
+
+input target: "Path to contract document (PDF, DOCX, or text)"
+input contract_type: "generic" # generic, NDA, employment, service, lease, or other
+
+agent clause_extractor:
+  model: sonnet
+  prompt: "You extract and catalog all significant clauses from the contract. Identify: parties, dates, key terms, obligations, termination clauses, liability limits, indemnification, confidentiality, non-compete, arbitration, governing law, and any unusual or one-sided clauses. List each clause with its location."
+
+agent risk_analyzer:
+  model: sonnet
+  prompt: "You analyze contract clauses for legal and business risks. Look for: unlimited liability, broad indemnification, automatic renewal, unilateral modification rights, non-mandatory arbitration, vague language, missing protections, aggressive IP assignments, excessive penalties, and hidden fees. Rate each risk as critical/high/medium/low."
+
+agent comparison_agent:
+  model: sonnet
+  prompt: "You compare the contract against industry standard clauses for {contract_type} contracts. Identify clauses that are favorable to one party, missing standard protections, and areas where negotiation might be needed."
+
+agent summary_writer:
+  model: opus
+  prompt: "You synthesize contract analysis into a clear summary. Highlight: key terms, major risks, recommendations for negotiation, must-have protections to negotiate for, and red flags. Write in plain language."
+
+agent negotiator:
+  model: opus
+  prompt: "You provide specific recommended changes to the contract. Suggest: alternative language for risky clauses, additions for better protection, and points to push back on. Format as specific suggestions with reasoning."
+
+parallel:
+  clauses = session: clause_extractor
+    prompt: "Extract all significant clauses from {target}."
+  risks = session: risk_analyzer
+    prompt: "Analyze {target} for legal and business risks."
+  comparison = session: comparison_agent
+    prompt: "Compare {target} against standard {contract_type} contract clauses."
+
+summary = session: summary_writer
+  prompt: "Summarize the contract analysis for {target} (type: {contract_type})"
+  context: { clauses, risks, comparison }
+
+negotiate = session: negotiator
+  prompt: "Provide negotiation recommendations for {target}"
+  context: { clauses, risks, comparison }
+
+save clauses to "contract-clauses.md"
+save risks to "contract-risks.md"
+save summary to "contract-summary.md"
+save negotiate to "contract-negotiations.md"
