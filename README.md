@@ -1,7 +1,3 @@
-> **Note**: I had a project already accepting pull requests that was hindered by hidden crypto stealers. If you want to make any changes, please fork your own repo.
-
-> **Docs**: [OpenClaw Prose Documentation](https://docs.openclaw.ai/prose)
-
 # Prose Workflows
 
 A collection of multi-agent AI workflows using [OpenProse](https://prose.md), a portable markdown-first programming language for orchestrating AI sessions.
