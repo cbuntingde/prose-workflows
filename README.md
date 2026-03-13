@@ -1,4 +1,4 @@
-> **Note**: These workflows haven't been fully tested yet, so they may not install or run perfectly out of the box. If you run into any issues, feel free to open a new issue!
+> **Note**: I had a project already accepting pull requests that was hindered by hidden crypto stealers. If you want to make any changes, please fork your own repo.
 
 > **Docs**: [OpenClaw Prose Documentation](https://docs.openclaw.ai/prose)
 
